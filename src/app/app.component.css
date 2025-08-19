@@ -1,0 +1,25 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+.main-content {
+  padding: 16px;
+}
+
+.active-link {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.hide-desktop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  mat-sidenav {
+    width: 250px;
+  }
+
+  .hide-desktop {
+    display: inline-flex;
+  }
+}

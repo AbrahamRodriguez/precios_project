@@ -1,0 +1,65 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav #drawer mode="side" opened>
+    <mat-toolbar color="primary">
+      Menú
+    </mat-toolbar>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/home" routerLinkActive="active-link">
+        <mat-icon>home</mat-icon>
+        <span>Inicio</span>
+      </a>
+      <a mat-list-item routerLink="/about" routerLinkActive="active-link">
+        <mat-icon>info</mat-icon>
+        <span>Acerca</span>
+      </a>
+      <a mat-list-item routerLink="/contact" routerLinkActive="active-link">
+        <mat-icon>contacts</mat-icon>
+        <span>Contacto</span>
+      </a>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Cotizaciones
+          </mat-panel-title>
+          </mat-expansion-panel-header>
+        <!-- 
+        <a mat-list-item routerLink="/cotizacion/item1" routerLinkActive="active-link">
+          <span>Contactos</span>
+        </a> -->
+        <a mat-list-item routerLink="contactos" routerLinkActive="active-link">
+          <span>Contactos</span>
+        </a>
+        <a mat-list-item routerLink="movimientos" routerLinkActive="active-link">
+          <span>Movimientos</span>
+        </a>
+        <a mat-list-item routerLink="notas" routerLinkActive="active-link">
+          <span>Notas de Venta</span>
+        </a>
+        <a mat-list-item routerLink="ejecutivos" routerLinkActive="active-link">
+          <span>Ejecutivos</span>
+        </a>
+        <a mat-list-item routerLink="productos" routerLinkActive="active-link">
+          <span>Productos y Servicios</span>
+        </a>
+        <a mat-list-item routerLink="localizar" routerLinkActive="active-link">
+          <span>Llamadas a Clientes</span>
+        </a>
+      </mat-expansion-panel>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Main content -->
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="drawer.toggle()" class="hide-desktop">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>Ventas</span>
+    </mat-toolbar>
+
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

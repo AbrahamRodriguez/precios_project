@@ -1,0 +1,8 @@
+.tabla-scroll {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.full-width-table {
+  min-width: 900px; /* ajusta este valor según tus columnas */
+}
