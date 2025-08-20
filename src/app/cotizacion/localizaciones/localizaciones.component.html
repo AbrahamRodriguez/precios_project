@@ -2,15 +2,36 @@
 <mat-dialog-content>
 <form [formGroup]="filtroForm" class="form-inline" (ngSubmit)="buscarCliente()" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;">
   
-  <mat-form-field appearance="outline">
+  <!-- <mat-form-field appearance="outline">
     <mat-label>RFC</mat-label>
     <input matInput formControlName="rfc" placeholder="RFC del cliente">
-  </mat-form-field>
+  </mat-form-field> -->
 
   <mat-form-field appearance="outline">
     <mat-label>Nombre</mat-label>
     <input matInput formControlName="nombre" placeholder="Nombre del cliente">
   </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Estatus</mat-label>
+    <mat-select formControlName="status" >
+            <mat-option  [value]="1">
+              Pagado
+            </mat-option> 
+            <mat-option  [value]="0">
+              Deudor
+            </mat-option>
+          </mat-select>
+  </mat-form-field>
+<mat-form-field appearance="fill">
+  <mat-label>Rango de fechas</mat-label>
+  <mat-date-range-input [rangePicker]="picker">
+    <input matStartDate placeholder="Fecha inicio" formControlName="fechaInicio" >
+    <input matEndDate placeholder="Fecha fin" formControlName="fechaFin">
+  </mat-date-range-input>
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-date-range-picker #picker></mat-date-range-picker>
+</mat-form-field>
+
 
   <button mat-raised-button color="primary" type="submit">
     Buscar

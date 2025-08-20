@@ -10,6 +10,7 @@ import { tap, shareReplay, map } from 'rxjs/operators';
 import { CatalogoContactos } from './CatalogoContacto.model';
 import { SalidaConCliente } from './SalidaConCliente.model';
 import { salidas_inventario } from './salidas_inventario.model';
+import { FiltrosBusqueda } from './FiltrosBusqueda.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -308,6 +309,54 @@ async insertarDetallesMovimiento(detalles: {
     .insert(detalles);
 
   return { data, error };
+}
+
+async getLlamadasFiltro(filtros: FiltrosBusqueda) {
+  // 🔹 construir query primero
+  let query = this.supabase
+    .from('vista_llamadas') // tabla principal
+    .select(`
+      *
+    `);
+
+  // 🔹 aplicar filtros condicionalmente
+  if (filtros.id_contacto) {
+    query = query.eq('id_contacto', filtros.id_contacto);
+  }
+
+  if (filtros.nombre_cliente) {
+    query = query.ilike('nombre_cliente', `%${filtros.nombre_cliente}%`);
+  }
+
+  if (filtros.fecha_inicio) {
+    query = query.gte('dt_fecha_localizacion', filtros.fecha_inicio);
+  }
+
+  if (filtros.fecha_fin) {
+    query = query.lte('dt_fecha_localizacion', filtros.fecha_fin);
+  }
+
+  // 🔹 ejecutar consulta al final
+  const { data, error } = await query;
+
+  if (error) throw error;
+  return data;
+}
+
+
+async getLlamadasCliente(){
+   const { data, error } = await this.supabase
+    .from('vista_llamadas') // tabla principal
+    .select(`
+      *
+    `)
+
+  if (error) {
+    console.error('Error al obtener salidas con clientes:', error);
+    return [];
+  }else{
+    return data;
+  }
 }
 
 async getSalidasConClientes() {

@@ -8,6 +8,7 @@ import { ApiService } from 'src/app/utils/api.service';
 import { SalidaConCliente } from 'src/app/utils/SalidaConCliente.model';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { VistaLlamadas } from 'src/app/utils/VistaLlamadas.model';
 @Component({
   selector: 'app-localizaciones',
   templateUrl: './localizaciones.component.html',
@@ -17,26 +18,25 @@ export class LocalizacionesComponent implements OnInit {
 clientes : any [] = [];
  displayedColumns: string[] = [
 
-  'rfc',
-  'nombre',
-  'dt_fecha',
-  'id',
-  // 'int_id_movimiento',
-  'total',
+  'id_llamada',
+  'nombre_cliente',
+  'dt_fecha_localizacion',
+  'telefono_llamada',
+  'total_salida',
   'acciones'
 ];
 
 columnAlias: { [key: string]: string } = {
-  id: 'ID Movimiento',
+  id_llamada: 'ID Movimiento',
   // int_id_movimiento: 'ID Movimiento',
-  dt_fecha: 'Fecha de Operación',
-  total: 'Total',
-  rfc: 'RFC del Cliente',
-  nombre: 'Nombre del Cliente',
+  dt_fecha_localizacion: 'Fecha de la Llamada',
+  total_salida: 'Total',
+  telefono_llamada: 'Número de Contacto',
+  nombre_cliente: 'Nombre del Cliente',
   acciones : 'Editar'
 };
 
-dataSource = new MatTableDataSource<SalidaConCliente>();
+dataSource = new MatTableDataSource<VistaLlamadas>();
 
 filtroForm: FormGroup;
 
@@ -45,29 +45,33 @@ constructor(
    public dialog: MatDialog,          
    public api : ApiService,) {
     this.filtroForm = this.fb.group({
-      rfc: [''],
-      nombre: ['']
+      nombre: [''],
+      fechaFin: [''],
+      fechaInicio: [''],
+      status: ['']
     });
 }
 
 async ngOnInit() {
-    this.clientes = await this.api.getSalidasConClientes();
+    this.clientes = await this.api.getLlamadasCliente();
     this.dataSource = new MatTableDataSource(this.clientes);
     // console.log(Object.entries(this.clientes));
  }
 
  buscarCliente() {
-  const { rfc, nombre } = this.filtroForm.value;
+  const { fecha, status } = this.filtroForm.value;
 
-  this.dataSource.filterPredicate = (data: SalidaConCliente, filter: string) => {
-    const { rfcFilter, nombreFilter } = JSON.parse(filter);
-    return (!rfcFilter || data.rfc?.toLowerCase().includes(rfcFilter.toLowerCase())) &&
-           (!nombreFilter || data.nombre?.toLowerCase().includes(nombreFilter.toLowerCase()));
+   
+
+  this.dataSource.filterPredicate = (data: VistaLlamadas, filter: string) => {
+    const { fechaFilter, estatusFilter } = JSON.parse(filter);
+    return (!fechaFilter || data.dt_fecha_localizacion?.toLowerCase().includes(fechaFilter.toLowerCase())) &&
+           (!estatusFilter || data.estatus == estatusFilter.toLowerCase());
   };
 
   this.dataSource.filter = JSON.stringify({
-    rfcFilter: rfc,
-    nombreFilter: nombre
+    fechaFilter: fecha,
+    estatusFilter: status
   });
 }
 
@@ -81,40 +85,11 @@ agregarNotaVenta() {
      }
     }); 
 }
-//  displayedColumns: string[] = [
-//   'id', 'cliente', 'productos', 'cantidad', 'precioUnitario', 'estado', 'acciones'
-// ];
-
-// columnAlias: { [key: string]: string } = {
-//   id: 'ID',
-//   cliente: 'Nombre del cliente',
-//   productos: 'Producto',
-//   cantidad: 'Cantidad',
-//   precioUnitario: 'Precio Unitario',
-//   estado: 'Estado',
-//   acciones: 'Acciones'
-// };
-
-  // dataSource = new MatTableDataSource<Cotizacion>([
-  //    {
-  //     id: 1,
-  //     cliente: 'Juan Pérez',
-  //     productos: 'Impresora',
-  //     fecha: '20/10/2010',
-  //     rfc:'ROQA951221KI',
-  //     cantidad: 2,
-  //     precioUnitario: 1500,
-  //     descuento: 10,
-  //     condicionesPago: 'Contado',
-  //     validezOferta: '7 días',
-  //     estado: 'pendiente',
-  //   },
-  // ]);
   modalidadRoute = 0;
 
   editarCotizacion(id: number, indice:number) {
  
-   const elemento = this.dataSource.data.find((el, i) =>  el.id === id);
+   const elemento = this.dataSource.data.find((el, i) =>  el.id_llamada === id);
     
     const dialogRef = this.dialog.open(ChangenotaComponent, {
      width: '150vh',

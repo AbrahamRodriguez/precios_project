@@ -35,6 +35,7 @@ import { EjecutivosComponent } from './cotizacion/ejecutivos/ejecutivos.componen
 import { ChangemovimientosComponent } from './cotizacion/movimientos/changemovimientos/changemovimientos.component';
 import { ChangenotaComponent } from './cotizacion/notas/changenota/changenota.component';
 import { LocalizacionesComponent } from './cotizacion/localizaciones/localizaciones.component';
+import { ChangellamadaComponent } from './cotizacion/localizaciones/changellamada/changellamada.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { LocalizacionesComponent } from './cotizacion/localizaciones/localizacio
     EjecutivosComponent,
     ChangemovimientosComponent,
     ChangenotaComponent,
-    LocalizacionesComponent
+    LocalizacionesComponent,
+    ChangellamadaComponent
   ],
   imports: [
     BrowserModule,
