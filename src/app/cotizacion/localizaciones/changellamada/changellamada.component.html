@@ -8,14 +8,21 @@
       <mat-form-field appearance="fill" style="flex: 1;">
         <mat-label>Cliente o RFC</mat-label>
         <input
+
+        #clienteInput
+        (focus)="cerrarAutocomplete()"
+
           type="text"
           matInput
           [matAutocomplete]="autoCliente"
+          [disabled]="!autocompleteActivo" 
           formControlName="cliente"
           (input)="onClienteInput($event)" />
         <mat-autocomplete
+        
           #autoCliente="matAutocomplete"
-          (optionSelected)="seleccionarCliente($event.option.value)">
+          (optionSelected)="seleccionarCliente($event.option.value)"
+          >
           <mat-option *ngFor="let cli of clientesFiltrados" [value]="cli">
             {{ cli.nombre ?? '' }} - {{ cli.rfc ?? '' }}
           </mat-option>

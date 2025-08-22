@@ -298,6 +298,14 @@ async eliminarDetalle(idDetalle: number): Promise<void> {
 
   if (error) throw error;
 }
+async eliminarLlamada(id_llamada: number): Promise<void> {
+  const { error } = await this.supabase
+    .from('datosllamada')
+    .delete()
+    .eq('id', id_llamada);
+
+  if (error) throw error;
+}
 
 
 
@@ -309,6 +317,15 @@ async registrarAbono(detalle : any): Promise<{ data?: any; error?: any }> {
 
   return { data, error };
 }
+
+ formatFecha(fecha: string): string {
+  if (!fecha) return '';
+  const d = new Date(fecha);
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+ }
 
 
 
@@ -386,8 +403,8 @@ async getLlamadasCliente(){
    const { data, error } = await this.supabase
     .from('vista_llamadas') // tabla principal
     .select(`
-      *
-    `)
+           *
+       `)
 
   if (error) {
     console.error('Error al obtener salidas con clientes:', error);
@@ -491,4 +508,9 @@ async functionAgruparProductos(): Promise<cat_prod_services[]> {
   return data ?? [];
  }
 
+
+ isoToInputDate(isoString: string): string {
+  if (!isoString) return '';
+  return isoString.split('T')[0]; // se queda solo con "YYYY-MM-DD"
+}
 }

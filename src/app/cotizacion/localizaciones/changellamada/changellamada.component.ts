@@ -1,4 +1,4 @@
-import { Component, OnInit , Inject , Optional , Directive, HostListener} from '@angular/core';
+import { Component, OnInit , Inject , Optional , ElementRef , Directive, HostListener , ViewChild } from '@angular/core';
 import { FormBuilder, FormControl , FormGroup, Validators ,ControlValueAccessor, NG_VALUE_ACCESSOR, FormArray, AbstractControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -12,6 +12,7 @@ import { DetCotizaciones } from 'src/app/utils/DetCotizaciones.model';
 import { from } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
 import { salidas_inventario } from 'src/app/utils/salidas_inventario.model';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 @Component({
   selector: 'app-changellamada',
   templateUrl: './changellamada.component.html',
@@ -51,13 +52,15 @@ export class ChangellamadaComponent implements OnInit {
 
     if (this.data?.modo === 'editar' && this.data?.llamada) {
       this.tipo = "Modificar Nota de Venta";
-      
+      this.autocompleteActivo = false;
+      const fecha_formateada = this.api.isoToInputDate(this.data?.llamada.dt_fecha_localizacion);
       this.abonoForm = this.fb.group({
         cliente: [this.data?.llamada.nombre_cliente , Validators.required],
         nota: [this.data?.llamada.id_salida, Validators.required],
         monto: [this.data?.llamada.monto_llamada, [Validators.required, Validators.min(1)]],
         telefono: [this.data?.llamada.telefono_llamada, [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-        fecha_contacto: [this.data?.llamada.dt_fecha_localizacion.toISOString(), Validators.required]
+        // fecha_contacto: [this.data?.llamada.dt_fecha_localizacion, Validators.required]
+        fecha_contacto: [fecha_formateada, Validators.required]
       });
       await this.api.buscarClientes(this.data?.llamada.nombre_cliente).then(lstClientes => {
         this.clientesFiltrados = lstClientes
@@ -69,6 +72,38 @@ export class ChangellamadaComponent implements OnInit {
       });
       this.seleccionarNota(this.data?.llamada.id_salida);
     }
+  }
+
+    
+  @ViewChild(MatAutocompleteTrigger) autoTrigger!: MatAutocompleteTrigger;
+  @ViewChild('clienteInput') clienteInput!: ElementRef<HTMLInputElement>;
+
+
+   iniciarEdicion() {
+    this.editando = true;
+
+    // 🔹 cierra el autocomplete si está abierto
+    this.autoTrigger.closePanel();
+
+    // 🔹 deshabilita el control
+    this.abonoForm.get('cliente')?.disable();
+
+    // 🔹 también podrías bloquear el input directamente
+    this.clienteInput.nativeElement.setAttribute('disabled', 'true');
+  }
+
+  cancelarEdicion() {
+    this.editando = false;
+
+    // 🔹 habilita el control otra vez
+    this.abonoForm.get('cliente')?.enable();
+
+    // 🔹 quita el atributo disabled del input
+    this.clienteInput.nativeElement.removeAttribute('disabled');
+  }
+
+  cerrarAutocomplete() {
+    this.autoTrigger.closePanel();
   }
   async filtrarClientes(term: string): Promise<void> {
     // const valor = term?.trim() ?? '';
@@ -199,7 +234,7 @@ export class ChangellamadaComponent implements OnInit {
 
 
     if (this.data?.modo === 'editar' && this.data?.llamada) {
-      await this.api.modificarAbono(abono , this.data?.llamada.id);
+      await this.api.modificarAbono(abono , this.data?.llamada.id_llamada);
     }else{
       await this.api.registrarAbono(abono);
     }
@@ -211,9 +246,11 @@ export class ChangellamadaComponent implements OnInit {
   abono: number = 0;
   telefono: string = '';
 
+  editando: boolean = false;
   abonoForm!: FormGroup;
   notas: salidas_inventario[] = [];
   saldoPendiente = 0;
+  autocompleteActivo = true;
 
   
   form!: FormGroup;

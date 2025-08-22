@@ -137,12 +137,7 @@ eliminarFila(index: number): void {
 
 async operacionEliminacion(index: number){
 
-  const registrosSalida = await this.api.getDetallesSalidaInventario(index);
-  for (const del of registrosSalida ) {
-    await this.api.devolverInventario(del.int_id_prod_service, del.fl_cantidad);
-    await this.api.eliminarDetalle(del.id);
-  }
-  const borrarNota = this.api.eliminarNotaSalida(index);
+  const borrarNota = await this.api.eliminarLlamada(index);
 
 }
 
