@@ -355,7 +355,7 @@ else{
         }
       }
 
-      close(): void {
+  close(): void {
     this.dialogRef?.close();
   }
 

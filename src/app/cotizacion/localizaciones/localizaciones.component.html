@@ -14,6 +14,9 @@
   <mat-form-field appearance="outline">
     <mat-label>Estatus</mat-label>
     <mat-select formControlName="status" >
+            <mat-option  [value]="">
+              Todas
+            </mat-option>  
             <mat-option  [value]="1">
               Pagado
             </mat-option> 
@@ -51,15 +54,15 @@
   </th>
   <td mat-cell *matCellDef="let element">
 <ng-container *ngIf="columna === 'acciones'; else defaultCell">
-  <button mat-icon-button color="primary" (click)="editarCotizacion(element.id , i)">
+  <button mat-icon-button color="primary" (click)="editarCotizacion(element.id_llamada , i)">
     <mat-icon>edit</mat-icon>
   </button>
 
-  <button mat-icon-button color="accent" (click)="generarPDF(element.id)">
+  <button mat-icon-button color="accent" (click)="generarPDF(element.id_llamada)">
     <mat-icon>picture_as_pdf</mat-icon>
   </button>
 
-  <button mat-icon-button color="warn" (click)="eliminarFila(element.id)">
+  <button mat-icon-button color="warn" (click)="eliminarFila(element.id_llamada)">
     <mat-icon>delete</mat-icon>
   </button>
 </ng-container>

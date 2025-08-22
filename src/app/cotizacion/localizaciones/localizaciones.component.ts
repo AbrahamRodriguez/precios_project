@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table'; 
 import { MatDialog } from '@angular/material/dialog';
-import { ChangenotaComponent } from '../notas/changenota/changenota.component';
+import { ChangellamadaComponent } from '../localizaciones/changellamada/changellamada.component';
 import { Cotizacion } from '../modelos/cotizacion.model';
 import { ApiService } from 'src/app/utils/api.service';
 import { SalidaConCliente } from 'src/app/utils/SalidaConCliente.model';
@@ -58,9 +58,9 @@ async ngOnInit() {
     // console.log(Object.entries(this.clientes));
  }
 
- buscarCliente() {
-  const { fecha, status } = this.filtroForm.value;
-
+async buscarCliente() {
+  const { nombre, status , fechaFin , fechaInicio} = this.filtroForm.value;
+  const bandera : any = status ? status == 1 : "";
    
 
   this.dataSource.filterPredicate = (data: VistaLlamadas, filter: string) => {
@@ -70,13 +70,26 @@ async ngOnInit() {
   };
 
   this.dataSource.filter = JSON.stringify({
-    fechaFilter: fecha,
+    fechaFilter: fechaFin,
     estatusFilter: status
   });
+
+  const fechaInicioStr = fechaInicio ? fechaInicio.toISOString() : null;
+  const fechaFinStr = fechaFin ? fechaFin.toISOString() : null;
+
+
+  this.clientes = await this.api.getLlamadasFiltro({
+    nombre_cliente :  nombre ,
+    estatus :  status ,
+    fecha_fin :  fechaFinStr,
+    fecha_inicio :  fechaInicioStr,
+  });
+  this.dataSource = new MatTableDataSource(this.clientes);
+
 }
 
 agregarNotaVenta() {
-  const dialogRef = this.dialog.open(ChangenotaComponent, {
+  const dialogRef = this.dialog.open(ChangellamadaComponent, {
      width: '150vh',
        //height: '76vh',
      disableClose: false,
@@ -91,13 +104,13 @@ agregarNotaVenta() {
  
    const elemento = this.dataSource.data.find((el, i) =>  el.id_llamada === id);
     
-    const dialogRef = this.dialog.open(ChangenotaComponent, {
+    const dialogRef = this.dialog.open(ChangellamadaComponent, {
      width: '150vh',
        //height: '76vh',
      disableClose: false,
      data: {
       modo : 'editar',
-      nota: elemento
+      llamada: elemento
      }
     }); 
   }

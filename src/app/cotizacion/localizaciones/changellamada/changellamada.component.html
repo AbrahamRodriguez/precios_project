@@ -1,1 +1,70 @@
-<p>changellamada works!</p>
+<h2 mat-dialog-title>{{tipo}}</h2>
+
+<mat-dialog-content style="max-height: 70vh; overflow: auto;">
+  <form [formGroup]="abonoForm" (ngSubmit)="guardarAbono()">
+
+    <!-- 🔹 Fila 1: Cliente y Nota -->
+    <div class="row mb-3" style="display: flex; gap: 16px;">
+      <mat-form-field appearance="fill" style="flex: 1;">
+        <mat-label>Cliente o RFC</mat-label>
+        <input
+          type="text"
+          matInput
+          [matAutocomplete]="autoCliente"
+          formControlName="cliente"
+          (input)="onClienteInput($event)" />
+        <mat-autocomplete
+          #autoCliente="matAutocomplete"
+          (optionSelected)="seleccionarCliente($event.option.value)">
+          <mat-option *ngFor="let cli of clientesFiltrados" [value]="cli">
+            {{ cli.nombre ?? '' }} - {{ cli.rfc ?? '' }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" style="flex: 1;" *ngIf="notas.length > 0">
+        <mat-label>Notas de venta</mat-label>
+        <mat-select formControlName="nota" (selectionChange)="seleccionarNota($event.value)">
+          <mat-option *ngFor="let nota of notas" [value]="nota.id_salida">
+            #{{ nota.id_salida }} | {{ nota.fecha_salida }} | Total: {{ nota.total | currency }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- 🔹 Fila 2: Monto, Teléfono, Fecha -->
+    <div class="row" *ngIf="notaSeleccionada" style="display: flex; gap: 16px;">
+      <mat-form-field appearance="fill" style="flex: 1;">
+        <mat-label>Monto abono</mat-label>
+        <input matInput type="number" formControlName="monto" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" style="flex: 1;">
+        <mat-label>Teléfono</mat-label>
+        <input matInput type="text" formControlName="telefono" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" style="flex: 1;">
+        <mat-label>Fecha de contacto</mat-label>
+        <input matInput type="date" formControlName="fecha_contacto" />
+      </mat-form-field>
+    </div>
+
+    <!-- 🔹 Botón -->
+    <div class="row mt-3" style="text-align: right;">
+      
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<!-- Botones -->
+<mat-dialog-actions align="end">
+    <button mat-raised-button class="btn btn-primary mr-2" color="primary"  (click)="guardarAbono()" type="button" [disabled]="abonoForm.invalid">
+    Guardar abono
+    </button>
+
+    <button mat-raised-button (click)="close()" class="btn btn-secondary p-2" color="secondary" type="button" >
+    Cerrar
+    </button>
+</mat-dialog-actions>

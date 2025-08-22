@@ -247,6 +247,19 @@ async getDetallesSalidaInventario(idSalidaInventario: number): Promise<DetCotiza
 
   return data as DetCotizaciones[];
 }
+async getSalidaInventarioContacto(index: number): Promise<salidas_inventario[]> {
+  const { data, error } = await this.supabase
+    .from('salidas_inventario')
+    .select('*')
+    .eq('id_contacto', index);
+
+  if (error) {
+    console.error('Error al obtener detalles:', error);
+    throw error;
+  }
+
+  return data as salidas_inventario[];
+}
 
 async modificarDetalle(detalle: DetCotizaciones): Promise<void> {
   const { error } = await this.supabase
@@ -287,6 +300,26 @@ async eliminarDetalle(idDetalle: number): Promise<void> {
 }
 
 
+
+
+async registrarAbono(detalle : any): Promise<{ data?: any; error?: any }> {
+  const { data, error } = await this.supabase
+    .from('datosllamada')
+    .insert(detalle);
+
+  return { data, error };
+}
+
+
+
+async modificarAbono(detalle : any , index : number): Promise<{ data?: any; error?: any }> {
+  const { data, error } = await this.supabase
+    .from('datosllamada')
+    .update(detalle)
+    .eq("id", index);
+
+  return { data, error };
+}
 
 
 async insertarDetalleMovimientoUnico(detalle : DetCotizaciones): Promise<{ data?: any; error?: any }> {
@@ -336,6 +369,11 @@ async getLlamadasFiltro(filtros: FiltrosBusqueda) {
     query = query.lte('dt_fecha_localizacion', filtros.fecha_fin);
   }
 
+  if (filtros.estatus !== "" && filtros.estatus !== null && filtros.estatus !== undefined) {
+    // Convertir a booleano: 1 = true, 0 = false
+    const estatusBool = filtros.estatus == 1 ? true : false;
+    query = query.eq('estatus', estatusBool);
+  }
   // 🔹 ejecutar consulta al final
   const { data, error } = await query;
 
@@ -391,6 +429,39 @@ async getSalidasConClientes() {
 
   return resultado;
 }
+async getSalidasPCliente(id_cliente:number) {
+  const { data, error } = await this.supabase
+    .from('salidas_inventario') // tabla principal
+    .select(`
+      id_salida,
+      fecha_salida,
+      total,
+      catalogo_tipos_contacto (
+        int_id_tipo_contacto,
+        rfc,
+        nombre
+      )
+    `)
+    .eq("id_contacto" ,id_cliente )
+
+  if (error) {
+    console.error('Error al obtener salidas con clientes:', error);
+    return [];
+  }
+
+  // Mapear la respuesta a una estructura plana
+  const resultado = data.map((row: any) => ({
+    id: row.id_salida,
+    dt_fecha: row.fecha_salida,
+    total: row.total,
+    rfc: row.catalogo_tipos_contacto?.rfc || '',
+    nombre: row.catalogo_tipos_contacto?.nombre || '',
+  }));
+
+
+
+  return resultado;
+}
 async functionAgruparProductos(): Promise<cat_prod_services[]> {
   const { data, error } = await this.supabase
   .from('cat_prod_services') // usa una tabla real que tengas
@@ -406,7 +477,7 @@ async functionAgruparProductos(): Promise<cat_prod_services[]> {
 } 
 
   async buscarClientes(valor: string): Promise<any[]> {
-  const { data, error } = await this.client
+  const { data, error } = await this.supabase
     .from('catalogo_tipos_contacto')
     // .select('int_id_tipo_contacto, nombre, rfc')
     .select('*')
